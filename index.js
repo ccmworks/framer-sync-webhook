@@ -33,6 +33,7 @@ app.post("/sync", async (req, res) => {
     const collection = collections.find(c => c.id === "P73xAMQqw")
     const items = await collection.getItems()
 
+    let updated = 0
     for (const item of items) {
       const row = rows.find(r =>
         String(r["Fração"]).trim().toLowerCase() === String(item.slug).trim().toLowerCase()
@@ -42,22 +43,22 @@ app.post("/sync", async (req, res) => {
       await collection.updateItem({
         id: item.id,
         fieldData: {
-          "CMtCYGORt": String(row["Fração"] ?? ""),
           "JhFj1b3y5": String(row["PISO"] ?? ""),
+          "CMtCYGORt": String(row["Fração"] ?? ""),
           "tReBYY3RW": String(row["Tipologia"] ?? ""),
           "Ecrj2HGjI": String(row["Área Fração"] ?? ""),
           "vWCvjnEku": String(row["Área Varanda"] ?? ""),
           "ArUmVhHs5": String(row["Área Total"] ?? ""),
           "ZBJiXG14h": String(row["ORIENTAÇÃO"] ?? ""),
           "CztqyTR8j": String(row["DISPONIBILIDADE"] ?? ""),
-          "InvGjtrFm": String(row["IMAGEM"] ?? ""),
           "Jyj3TXCmg": String(row["PLANTA DOWNLOAD"] ?? ""),
         }
       })
+      updated++
     }
 
     await framer.publish()
-    res.json({ success: true, message: `${items.length} apartamentos sincronizados e site publicado!` })
+    res.json({ success: true, message: `${updated} apartamentos sincronizados e site publicado!` })
   } catch (error) {
     console.error(error)
     res.status(500).json({ success: false, error: error.message })
