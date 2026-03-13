@@ -1,14 +1,11 @@
 import express from "express"
 import { connect } from "framer-api"
-
 const app = express()
 app.use(express.json())
-
 const API_KEY = process.env.FRAMER_API_KEY
 const PROJECT_URL = process.env.FRAMER_PROJECT_URL
 const SHEET_ID = "16G-LL7eAZx43bDYbMfrsfWPb8t9lHTDhV862FJoCOZs"
 const SHEET_NAME = "CAEIRO"
-
 async function getSheetData() {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`
   const response = await fetch(url)
@@ -23,18 +20,22 @@ async function getSheetData() {
     return item
   })
 }
-
 app.get("/debug", async (req, res) => {
   let framer
   try {
-    const rows = await getSheetData()
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`
+    const response = await fetch(url)
+    const text = await response.text()
+    const raw = text.substring(47).slice(0, -2)
+    const json = JSON.parse(raw)
+    const headers = json.table.cols.map(col => col.label)
     framer = await connect(PROJECT_URL, API_KEY)
     const collections = await framer.getCollections()
     const collection = collections.find(c => c.id === "P73xAMQqw")
     const items = await collection.getItems()
-
     res.json({
-      sheetRows: rows.map(r => ({ fracao: r["Fração"] })),
+      headers,
+      firstRawRow: json.table.rows[0],
       collectionItems: items.map(i => ({ id: i.id, slug: i.slug, fracao: i.fieldData?.CMtCYGORt?.value }))
     })
   } catch (error) {
@@ -43,7 +44,6 @@ app.get("/debug", async (req, res) => {
     if (framer) await framer.disconnect()
   }
 })
-
 app.post("/sync", async (req, res) => {
   let framer
   try {
@@ -52,14 +52,12 @@ app.post("/sync", async (req, res) => {
     const collections = await framer.getCollections()
     const collection = collections.find(c => c.id === "P73xAMQqw")
     const items = await collection.getItems()
-
     let updated = 0
     for (const item of items) {
       const row = rows.find(r =>
         String(r["Fração"]).trim().toLowerCase() === String(item.slug).trim().toLowerCase()
       )
       if (!row) continue
-
       await collection.updateItem({
         id: item.id,
         fieldData: {
@@ -76,7 +74,6 @@ app.post("/sync", async (req, res) => {
       })
       updated++
     }
-
     // await framer.publish()
     res.json({ success: true, message: `${updated} apartamentos sincronizados!` })
   } catch (error) {
@@ -86,5 +83,4 @@ app.post("/sync", async (req, res) => {
     if (framer) await framer.disconnect()
   }
 })
-
 app.listen(3000, () => console.log("Servidor ativo na porta 3000"))
