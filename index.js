@@ -32,8 +32,3 @@ app.get("/fields", async (req, res) => {
 })
 
 app.listen(3000, () => console.log("Servidor ativo na porta 3000"))
-```
-
-Faz commit, aguarda o redeploy no Railway, e depois abre no browser:
-```
-https://framer-sync-webhook-production.up.railway.app/fields
