@@ -7,7 +7,7 @@ const PROJECT_URL = process.env.FRAMER_PROJECT_URL
 const SHEET_ID = "16G-LL7eAZx43bDYbMfrsfWPb8t9lHTDhV862FJoCOZs"
 const SHEET_NAME = "CAEIRO"
 async function getSheetData() {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&headers=1`
   const response = await fetch(url)
   const text = await response.text()
   const json = JSON.parse(text.substring(47).slice(0, -2))
@@ -23,7 +23,7 @@ async function getSheetData() {
 app.get("/debug", async (req, res) => {
   let framer
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&headers=1`
     const response = await fetch(url)
     const text = await response.text()
     const raw = text.substring(47).slice(0, -2)
