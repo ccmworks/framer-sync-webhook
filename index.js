@@ -88,8 +88,3 @@ app.post("/sync", async (req, res) => {
 })
 
 app.listen(3000, () => console.log("Servidor ativo na porta 3000"))
-```
-
-Faz commit, aguarda o Railway ficar Active e abre:
-```
-https://framer-sync-webhook-production.up.railway.app/debug
