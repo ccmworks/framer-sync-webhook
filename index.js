@@ -24,6 +24,26 @@ async function getSheetData() {
   })
 }
 
+app.get("/debug", async (req, res) => {
+  let framer
+  try {
+    const rows = await getSheetData()
+    framer = await connect(PROJECT_URL, API_KEY)
+    const collections = await framer.getCollections()
+    const collection = collections.find(c => c.id === "P73xAMQqw")
+    const items = await collection.getItems()
+
+    res.json({
+      sheetRows: rows.map(r => ({ fracao: r["Fração"] })),
+      collectionItems: items.map(i => ({ id: i.id, slug: i.slug, fracao: i.fieldData?.CMtCYGORt?.value }))
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  } finally {
+    if (framer) await framer.disconnect()
+  }
+})
+
 app.post("/sync", async (req, res) => {
   let framer
   try {
@@ -68,3 +88,8 @@ app.post("/sync", async (req, res) => {
 })
 
 app.listen(3000, () => console.log("Servidor ativo na porta 3000"))
+```
+
+Faz commit, aguarda o Railway ficar Active e abre:
+```
+https://framer-sync-webhook-production.up.railway.app/debug
