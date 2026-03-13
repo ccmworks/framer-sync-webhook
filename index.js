@@ -57,8 +57,8 @@ app.post("/sync", async (req, res) => {
       updated++
     }
 
-    await framer.publish()
-    res.json({ success: true, message: `${updated} apartamentos sincronizados e site publicado!` })
+    // await framer.publish()
+    res.json({ success: true, message: `${updated} apartamentos sincronizados!` })
   } catch (error) {
     console.error(error)
     res.status(500).json({ success: false, error: error.message })
