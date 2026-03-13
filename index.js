@@ -50,18 +50,17 @@ app.post("/sync", async (req, res) => {
     for (const item of items) {
       const row = rows.find(r => String(r["slug"]).trim() === String(item.slug).trim())
       if (!row) continue
-      await collection.updateItem({
-        id: item.id,
+      await item.setAttributes({
         fieldData: {
-          "JhFj1b3y5": String(row["PISO"] ?? ""),
-          "CMtCYGORt": String(row["Fração"] ?? ""),
-          "tReBYY3RW": String(row["Tipologia"] ?? ""),
-          "Ecrj2HGjI": String(row["Área  Fração"] ?? ""),
-          "vWCvjnEku": String(row["Área  Varanda"] ?? ""),
-          "ArUmVhHs5": String(row["Área Total"] ?? ""),
-          "ZBJiXG14h": String(row["ORIENTAÇÃO"] ?? ""),
-          "CztqyTR8j": String(row["DISPONIBILIDADE"] ?? ""),
-          "Jyj3TXCmg": String(row["PLANTA DOWNLOAD"] ?? ""),
+          "JhFj1b3y5": { type: "string", value: String(row["PISO"] ?? "") },
+          "CMtCYGORt": { type: "string", value: String(row["Fração"] ?? "") },
+          "tReBYY3RW": { type: "string", value: String(row["Tipologia"] ?? "") },
+          "Ecrj2HGjI": { type: "string", value: String(row["Área  Fração"] ?? "") },
+          "vWCvjnEku": { type: "string", value: String(row["Área  Varanda"] ?? "") },
+          "ArUmVhHs5": { type: "string", value: String(row["Área Total"] ?? "") },
+          "ZBJiXG14h": { type: "string", value: String(row["ORIENTAÇÃO"] ?? "") },
+          "CztqyTR8j": { type: "string", value: String(row["DISPONIBILIDADE"] ?? "") },
+          "Jyj3TXCmg": { type: "string", value: String(row["PLANTA DOWNLOAD"] ?? "") },
         }
       })
       updated++
