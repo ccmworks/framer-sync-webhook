@@ -60,7 +60,7 @@ app.post("/sync", async (req, res) => {
           "ArUmVhHs5": { type: "string", value: String(row["Área Total"] ?? "") },
           "ZBJiXG14h": { type: "string", value: String(row["ORIENTAÇÃO"] ?? "") },
           "CztqyTR8j": { type: "string", value: String(row["DISPONIBILIDADE"] ?? "") },
-          "Jyj3TXCmg": { type: "string", value: String(row["PLANTA DOWNLOAD"] ?? "") },
+          "Jyj3TXCmg": { type: "link", value: String(row["PLANTA DOWNLOAD"] ?? "") },
         }
       })
       updated++
