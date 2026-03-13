@@ -11,8 +11,8 @@ app.post("/sync", async (req, res) => {
   let framer
   try {
     framer = await connect(PROJECT_URL, API_KEY)
-    await framer.publishSite()
-    res.json({ success: true, message: "Site publicado com sucesso!" })
+    const result = await framer.publish()
+    res.json({ success: true, result })
   } catch (error) {
     console.error(error)
     res.status(500).json({ success: false, error: error.message })
