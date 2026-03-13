@@ -23,20 +23,14 @@ async function getSheetData() {
 app.get("/debug", async (req, res) => {
   let framer
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&headers=1`
-    const response = await fetch(url)
-    const text = await response.text()
-    const raw = text.substring(47).slice(0, -2)
-    const json = JSON.parse(raw)
-    const headers = json.table.cols.map(col => col.label)
+    const rows = await getSheetData()
     framer = await connect(PROJECT_URL, API_KEY)
     const collections = await framer.getCollections()
     const collection = collections.find(c => c.id === "P73xAMQqw")
     const items = await collection.getItems()
     res.json({
-      headers,
-      firstRawRow: json.table.rows[0],
-      collectionItems: items.map(i => ({ id: i.id, slug: i.slug, fracao: i.fieldData?.CMtCYGORt?.value }))
+      sheetRows: rows.map(r => ({ slug: r["slug"], disponibilidade: r["DISPONIBILIDADE"] })),
+      collectionItems: items.map(i => ({ id: i.id, slug: i.slug }))
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -54,9 +48,7 @@ app.post("/sync", async (req, res) => {
     const items = await collection.getItems()
     let updated = 0
     for (const item of items) {
-      const row = rows.find(r =>
-        String(r["Fração"]).trim().toLowerCase() === String(item.slug).trim().toLowerCase()
-      )
+      const row = rows.find(r => String(r["slug"]).trim() === String(item.slug).trim())
       if (!row) continue
       await collection.updateItem({
         id: item.id,
@@ -64,8 +56,8 @@ app.post("/sync", async (req, res) => {
           "JhFj1b3y5": String(row["PISO"] ?? ""),
           "CMtCYGORt": String(row["Fração"] ?? ""),
           "tReBYY3RW": String(row["Tipologia"] ?? ""),
-          "Ecrj2HGjI": String(row["Área Fração"] ?? ""),
-          "vWCvjnEku": String(row["Área Varanda"] ?? ""),
+          "Ecrj2HGjI": String(row["Área  Fração"] ?? ""),
+          "vWCvjnEku": String(row["Área  Varanda"] ?? ""),
           "ArUmVhHs5": String(row["Área Total"] ?? ""),
           "ZBJiXG14h": String(row["ORIENTAÇÃO"] ?? ""),
           "CztqyTR8j": String(row["DISPONIBILIDADE"] ?? ""),
